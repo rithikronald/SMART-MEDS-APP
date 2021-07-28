@@ -3,12 +3,12 @@ import {
   StyleSheet,
   Text,
   View,
-  Button,
   TouchableOpacity,
   Image,
   ScrollView,
   ActivityIndicator,
 } from "react-native";
+
 import { getPatientDetails } from "../apiClients/doctor";
 
 export default function ProfileScreen({ navigation }) {
@@ -118,7 +118,14 @@ export default function ProfileScreen({ navigation }) {
           </TouchableOpacity>
         </>
       ) : (
-        <ActivityIndicator size="large" color="#000" />
+        <View
+          style={{ flex: 1, alignSelf: "center", justifyContent: "center" }}
+        >
+          <ActivityIndicator size="large" color="#000" />
+          <Text style={[styles.titleText, { fontSize: 16, marginTop: "4%" }]}>
+            Fetching Patient Details
+          </Text>
+        </View>
       )}
     </View>
   );
