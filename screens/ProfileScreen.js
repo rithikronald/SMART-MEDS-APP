@@ -68,7 +68,14 @@ export default function ProfileScreen({ navigation }) {
                 }}
               >
                 <Text style={styles.titleText}>{data.recent.diseaseName}</Text>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() =>
+                    navigation.navigate("ViewPrescription", {
+                      id: data.recent.id,
+                    })
+                  }
+                >
                   <Text style={styles.buttonText}>View</Text>
                 </TouchableOpacity>
               </View>
