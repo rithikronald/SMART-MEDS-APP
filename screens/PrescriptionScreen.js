@@ -3,89 +3,194 @@ import {
   StyleSheet,
   Text,
   View,
-  Button,
   TouchableOpacity,
-  Image,
   ScrollView,
   TextInput,
+  ActivityIndicator,
+  ToastAndroid,
 } from "react-native";
+import { StackActions } from "@react-navigation/native";
+
+import { createPrescription } from "../apiClients/doctor";
+
+const PATIENT_ID = "61010d8bbd45929210a6b08b";
 
 export default function PrescriptionScreen({ navigation }) {
   const [diseaseName, setDiseaseName] = useState("");
+  const [medicineList, setMedicineList] = useState([
+    { name: "", intakes: [false, false, false] },
+  ]);
   const [duration, setDuration] = useState(1);
-  useEffect(() => console.log(duration), []);
+  const [loading, setLoading] = useState(false);
+
+  const createPrescriptionForPatient = () => {
+    const prescription = { diseaseName };
+    prescription["medicationPeriod"] = duration;
+    prescription["medicines"] = medicineList.filter((m) => m.name !== "");
+    prescription["patientId"] = PATIENT_ID;
+
+    setLoading(true);
+    createPrescription(prescription).then(() => {
+      ToastAndroid.show(
+        "Digital Prescription generated successfully!",
+        ToastAndroid.LONG
+      );
+      navigation.dispatch(StackActions.popToTop());
+    });
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.titleText}>New Prescription</Text>
-      <ScrollView>
-        <View style={styles.medicationContainer}>
-          <TextInput
-            style={styles.diseaseInput}
-            placeholder="Disease Name"
-            onChangeText={(text) => {
-              setDiseaseName(text);
-            }}
-          />
-          <View style={styles.counter}>
-            <TouchableOpacity
-              style={styles.rockerzButton}
-              onPress={() => setDuration((prev) => prev + 1)}
-            >
-              <Text style={{ fontSize: 25 }}>+</Text>
-            </TouchableOpacity>
-            <View style={styles.counterInput} value={duration}>
-              <Text style={{ fontSize: 20 }}>{duration}</Text>
+      {loading ? (
+        <View
+          style={{ flex: 1, alignSelf: "center", justifyContent: "center" }}
+        >
+          <ActivityIndicator size="large" color="#000" />
+          <Text style={[styles.titleText, { fontSize: 16, marginTop: "4%" }]}>
+            Creating Prescription
+          </Text>
+        </View>
+      ) : (
+        <>
+          <ScrollView>
+            <View style={styles.medicationContainer}>
+              <TextInput
+                style={styles.diseaseInput}
+                placeholder="Disease Name"
+                onChangeText={(text) => {
+                  setDiseaseName(text);
+                }}
+              />
+              <Text style={[styles.titleText, { marginTop: "10%" }]}>
+                Medication Period
+              </Text>
+              <View style={styles.counter}>
+                <TouchableOpacity
+                  style={styles.rockerzButton}
+                  onPress={() => setDuration((prev) => prev + 1)}
+                >
+                  <Text style={{ fontSize: 25 }}>+</Text>
+                </TouchableOpacity>
+                <View style={styles.counterInput} value={duration}>
+                  <Text style={{ fontSize: 20 }}>{duration}</Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.rockerzButton}
+                  onPress={() =>
+                    duration != 1 ? setDuration((prev) => prev - 1) : null
+                  }
+                >
+                  <Text style={{ fontSize: 25 }}>-</Text>
+                </TouchableOpacity>
+              </View>
             </View>
+            <Text style={[styles.titleText, { marginTop: "10%" }]}>
+              Medicine
+            </Text>
+            {medicineList.map((m, index) => (
+              <MedicineForm
+                key={`${index}`}
+                value={m}
+                onChange={(val) =>
+                  //console.log(val)
+                  setMedicineList((prev) => [
+                    ...prev.map((med, ind) => (ind === index ? val : med)),
+                  ])
+                }
+              />
+            ))}
+
             <TouchableOpacity
-              style={styles.rockerzButton}
+              style={styles.addMedicineButton}
               onPress={() =>
-                duration != 1 ? setDuration((prev) => prev - 1) : null
+                setMedicineList((prev) => [
+                  ...prev,
+                  { name: "", intakes: [false, false, false] },
+                ])
               }
             >
-              <Text style={{ fontSize: 25 }}>-</Text>
+              <Text> + Add Another</Text>
+            </TouchableOpacity>
+          </ScrollView>
+          <View style={styles.bottomButtonContainer}>
+            <TouchableOpacity
+              style={[
+                styles.bottomButton,
+                { backgroundColor: "#f94144", flex: 1 },
+              ]}
+              onPress={() => navigation.goBack()}
+            >
+              <Text style={{ fontSize: 20, color: "#fff" }}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.bottomButton,
+                { backgroundColor: "#90be6d", flex: 1 },
+              ]}
+            >
+              <Text
+                style={{ fontSize: 20, color: "#fff" }}
+                onPress={() => createPrescriptionForPatient()}
+              >
+                Send
+              </Text>
             </TouchableOpacity>
           </View>
-        </View>
-        <Text style={[styles.titleText, { marginTop: "10%" }]}>Medicine</Text>
-        <View style={styles.medicineContainer}>
-          <TextInput style={styles.medicineInput} placeholder="Medicine name" />
-          <View style={styles.timeContainer}>
-            <TouchableOpacity
-              style={[styles.rockerzButton, { justifyContent: "center" }]}
-            >
-              <Text>M</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.rockerzButton, { justifyContent: "center" }]}
-            >
-              <Text>A</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.rockerzButton, { justifyContent: "center" }]}
-            >
-              <Text>N</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-        <TouchableOpacity style={styles.addMedicineButton}>
-          <Text> + Add Another</Text>
-        </TouchableOpacity>
-      </ScrollView>
-      <View style={styles.bottomButtonContainer}>
+        </>
+      )}
+    </View>
+  );
+}
+
+const MedicineForm = ({ value, onChange }) => {
+  const toggleTime = (pos) => {
+    onChange({
+      ...value,
+      intakes: [...value.intakes.map((v, ind) => (ind === pos ? !v : v))],
+    });
+  };
+
+  return (
+    <View style={styles.medicineContainer}>
+      <TextInput
+        style={styles.medicineInput}
+        value={value.name}
+        onChangeText={(e) => onChange({ ...value, name: e })}
+        placeholder="Medicine name"
+      />
+      <View style={styles.timeContainer}>
         <TouchableOpacity
-          style={[styles.bottomButton, { backgroundColor: "#f94144", flex: 1 }]}
+          style={[
+            styles.rockerzButton,
+            value.intakes[0] ? styles.rockerzButtonEnabled : null,
+          ]}
+          onPress={() => toggleTime(0)}
         >
-          <Text style={{ fontSize: 20, color: "#fff" }}>Cancel</Text>
+          <Text>M</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.bottomButton, { backgroundColor: "#90be6d", flex: 1 }]}
+          style={[
+            styles.rockerzButton,
+            value.intakes[1] ? styles.rockerzButtonEnabled : null,
+          ]}
+          onPress={() => toggleTime(1)}
         >
-          <Text style={{ fontSize: 20, color: "#fff" }}>Send</Text>
+          <Text>A</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.rockerzButton,
+            value.intakes[2] ? styles.rockerzButtonEnabled : null,
+          ]}
+          onPress={() => toggleTime(2)}
+        >
+          <Text>N</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -100,11 +205,11 @@ const styles = StyleSheet.create({
     color: "#423E37",
   },
   medicationContainer: {
-    alignItems: "center",
+    // alignItems: "center",
     marginTop: "5%",
   },
   diseaseInput: {
-    width: "90%",
+    width: "100%",
     height: 50,
     borderRadius: 10,
     backgroundColor: "#fff",
@@ -114,7 +219,7 @@ const styles = StyleSheet.create({
   counter: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: "10%",
+    marginTop: "4%",
   },
   counterInput: {
     width: 100,
@@ -132,6 +237,15 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     alignItems: "center",
+    justifyContent: "center",
+  },
+  rockerzButtonEnabled: {
+    backgroundColor: "#90be6d",
+    borderRadius: 100,
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
   },
   medicineContainer: {
     marginTop: "6%",
