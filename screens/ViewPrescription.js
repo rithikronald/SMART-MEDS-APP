@@ -3,23 +3,18 @@ import {
   StyleSheet,
   Text,
   View,
-  Button,
   TouchableOpacity,
-  Image,
   ScrollView,
-  TextInput,
   ActivityIndicator,
 } from "react-native";
 import { getPrescription } from "../apiClients/doctor/index";
 
 export default function ViewPrescription({ route, navigation }) {
-  const { id } = route.params;
-  const [diseaseName, setDiseaseName] = useState("");
-  const [duration, setDuration] = useState(1);
+  const { prescriptionId, patientId } = route.params;
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    getPrescription()
+    getPrescription(prescriptionId, patientId)
       .then((res) => {
         setData(res);
       })
@@ -34,15 +29,17 @@ export default function ViewPrescription({ route, navigation }) {
           <ScrollView>
             <View style={styles.medicationContainer}>
               <View style={styles.counter}>
-                <Text style={{ fontSize: 16 }}>DiseaseName</Text>
+                <Text style={{ fontSize: 16, flex: 1 }}>DiseaseName</Text>
                 <View style={styles.counterInput}>
                   <Text style={{ fontSize: 20 }}>{data.diseaseName}</Text>
                 </View>
               </View>
               <View style={styles.counter}>
-                <Text style={{ fontSize: 16 }}>MedicationPeriod</Text>
+                <Text style={{ fontSize: 16, flex: 1 }}>Medication Period</Text>
                 <View style={styles.counterInput}>
-                  <Text style={{ fontSize: 20 }}>{data.medicationPeriod}</Text>
+                  <Text style={{ fontSize: 20 }}>
+                    {data.medicationPeriod} days
+                  </Text>
                 </View>
               </View>
             </View>
@@ -99,30 +96,16 @@ export default function ViewPrescription({ route, navigation }) {
               </View>
             ))}
           </ScrollView>
-          <View style={styles.bottomButtonContainer}>
-            <TouchableOpacity
-              style={[
-                styles.bottomButton,
-                { backgroundColor: "#f94144", flex: 1 },
-              ]}
-            >
-              <Text style={{ fontSize: 20, color: "#fff" }}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.bottomButton,
-                { backgroundColor: "#90be6d", flex: 1 },
-              ]}
-              onPress={() =>
-                navigation.navigate("PharmacyPrescription", { id: 1 })
-              }
-            >
-              <Text style={{ fontSize: 20, color: "#fff" }}>Send</Text>
-            </TouchableOpacity>
-          </View>
         </>
       ) : (
-        <ActivityIndicator size="large" color="#000" />
+        <View
+          style={{ flex: 1, alignSelf: "center", justifyContent: "center" }}
+        >
+          <ActivityIndicator size="large" color="#000" />
+          <Text style={[styles.titleText, { fontSize: 16, marginTop: "4%" }]}>
+            Loading Prescription
+          </Text>
+        </View>
       )}
     </View>
   );
@@ -139,6 +122,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 26,
     color: "#423E37",
+    alignSelf: "center",
   },
   medicationContainer: {
     marginTop: "5%",
@@ -156,9 +140,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginTop: "5%",
+    width: "100%",
   },
   counterInput: {
-    width: 100,
+    flex: 1,
     height: 50,
     borderRadius: 10,
     backgroundColor: "#fff",

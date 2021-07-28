@@ -3,75 +3,89 @@ import {
   StyleSheet,
   Text,
   View,
-  Button,
   TouchableOpacity,
   Image,
   ScrollView,
-  TextInput,
   ActivityIndicator,
+  ToastAndroid,
 } from "react-native";
-import { getPrescription } from "../apiClients/pharmacy/index";
+import { StackActions } from "@react-navigation/native";
+
+import {
+  getPrescription,
+  deliverPrescription,
+} from "../apiClients/pharmacy/index";
 
 export default function PharmacyPrescription({ route, navigation }) {
-  const { id } = route.params;
-  const [diseaseName, setDiseaseName] = useState("");
-  const [duration, setDuration] = useState(1);
+  const { patientId } = route.params;
   const [data, setData] = useState(null);
+  const [loaderMessage, setLoaderMessage] = useState("Loading Prescription");
+  const [loading, setLoading] = useState(true);
+
+  const deliverPrescriptionForPatient = () => {
+    setLoading(true);
+    deliverPrescription(data.prescriptionId).then(() => {
+      ToastAndroid.show("Medicines delivered successfully!", ToastAndroid.LONG);
+      navigation.dispatch(StackActions.popToTop());
+    });
+  };
 
   useEffect(() => {
-    getPrescription(id)
+    getPrescription(patientId)
       .then((res) => {
         setData(res);
+        setLoading(false);
+        setLoaderMessage("Delivering medicines...");
       })
       .catch((err) => console.log(err));
     console.log(data);
   }, []);
   return (
     <View style={styles.container}>
-      {data != null ? (
+      {!loading && data !== null ? (
         <>
-          <View style={styles.titleCard}>
-            <View style={styles.textContainer}>
-              <Text style={styles.titleText}>{data.name}</Text>
-              <View style={styles.detailsContainer}>
-                <View style={styles.categoryContainer}>
-                  <Text style={styles.categoryText}>Age :</Text>
-                  <Text style={styles.valueText}>{data.age} yrs</Text>
-                </View>
-                <View style={styles.categoryContainer}>
-                  <Text style={styles.categoryText}>Weight :</Text>
-                  <Text style={styles.valueText}>{data.weight} kgs</Text>
-                </View>
-                <View style={styles.categoryContainer}>
-                  <Text style={styles.categoryText}>height :</Text>
-                  <Text style={styles.valueText}>{data.height} ft</Text>
-                </View>
-                <View style={styles.categoryContainer}>
-                  <Text style={styles.categoryText}>Blood Group :</Text>
-                  <Text style={styles.valueText}>{data.bloodGroup}ve</Text>
+          <ScrollView>
+            <View style={styles.titleCard}>
+              <View style={styles.textContainer}>
+                <Text style={styles.titleText}>{data.name}</Text>
+                <View style={styles.detailsContainer}>
+                  <View style={styles.categoryContainer}>
+                    <Text style={styles.categoryText}>Age :</Text>
+                    <Text style={styles.valueText}>{data.age} yrs</Text>
+                  </View>
+                  <View style={styles.categoryContainer}>
+                    <Text style={styles.categoryText}>Weight :</Text>
+                    <Text style={styles.valueText}>{data.weight} kgs</Text>
+                  </View>
+                  <View style={styles.categoryContainer}>
+                    <Text style={styles.categoryText}>height :</Text>
+                    <Text style={styles.valueText}>{data.height} ft</Text>
+                  </View>
+                  <View style={styles.categoryContainer}>
+                    <Text style={styles.categoryText}>Blood Group :</Text>
+                    <Text style={styles.valueText}>{data.bloodGroup}ve</Text>
+                  </View>
                 </View>
               </View>
+              <Image
+                source={{
+                  uri: `${data.photoURL}`,
+                }}
+                style={styles.thumnailImage}
+              />
             </View>
-            <Image
-              source={{
-                uri: `${data.photoURL}`,
-              }}
-              style={styles.thumnailImage}
-            />
-          </View>
-          <Text style={[styles.titleText, { marginTop: "4%" }]}>
-            Prescription
-          </Text>
-          <ScrollView>
+            <Text style={[styles.titleText, { marginTop: "4%" }]}>
+              Prescription
+            </Text>
             <View style={styles.medicationContainer}>
               <View style={styles.counter}>
-                <Text style={{ fontSize: 16 }}>DiseaseName</Text>
+                <Text style={{ fontSize: 16, flex: 1 }}>DiseaseName</Text>
                 <View style={styles.counterInput}>
                   <Text style={{ fontSize: 20 }}>{data.diseaseName}</Text>
                 </View>
               </View>
               <View style={styles.counter}>
-                <Text style={{ fontSize: 16 }}>MedicationPeriod</Text>
+                <Text style={{ fontSize: 16, flex: 1 }}>Medication Period</Text>
                 <View style={styles.counterInput}>
                   <Text style={{ fontSize: 20 }}>
                     {data.medicationPeriod} Days
@@ -138,13 +152,21 @@ export default function PharmacyPrescription({ route, navigation }) {
                 styles.bottomButton,
                 { backgroundColor: "#90be6d", flex: 1 },
               ]}
+              onPress={() => deliverPrescriptionForPatient()}
             >
               <Text style={{ fontSize: 20, color: "#fff" }}>Deliver</Text>
             </TouchableOpacity>
           </View>
         </>
       ) : (
-        <ActivityIndicator size="large" color="#000" />
+        <View
+          style={{ flex: 1, alignSelf: "center", justifyContent: "center" }}
+        >
+          <ActivityIndicator size="large" color="#000" />
+          <Text style={[styles.titleText, { fontSize: 16, marginTop: "4%" }]}>
+            {loaderMessage}
+          </Text>
+        </View>
       )}
     </View>
   );
@@ -177,10 +199,11 @@ const styles = StyleSheet.create({
   counter: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: "3%",
+    marginTop: "5%",
+    width: "100%",
   },
   counterInput: {
-    width: 100,
+    flex: 1,
     height: 50,
     borderRadius: 10,
     backgroundColor: "#fff",

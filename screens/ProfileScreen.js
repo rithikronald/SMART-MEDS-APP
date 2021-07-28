@@ -11,7 +11,8 @@ import {
 
 import { getPatientDetails } from "../apiClients/doctor";
 
-export default function ProfileScreen({ navigation }) {
+export default function ProfileScreen({ route, navigation }) {
+  const { patientId } = route.params;
   const more = ">";
   const [data, setData] = useState(null);
   useEffect(() => {
@@ -72,7 +73,8 @@ export default function ProfileScreen({ navigation }) {
                   style={styles.button}
                   onPress={() =>
                     navigation.navigate("ViewPrescription", {
-                      id: data.recent.id,
+                      prescriptionId: data.recent.id,
+                      patientId,
                     })
                   }
                 >
@@ -108,7 +110,10 @@ export default function ProfileScreen({ navigation }) {
                     <TouchableOpacity
                       style={[styles.button, { width: 60, height: 20 }]}
                       onPress={() =>
-                        navigation.navigate("ViewPrescription", { id: item.id })
+                        navigation.navigate("ViewPrescription", {
+                          prescriptionId: item.id,
+                          patientId,
+                        })
                       }
                     >
                       <Text style={[styles.buttonText, { fontSize: 14 }]}>
@@ -122,7 +127,9 @@ export default function ProfileScreen({ navigation }) {
           </View>
           <TouchableOpacity
             style={styles.fab}
-            onPress={() => navigation.navigate("PrescriptionScreen")}
+            onPress={() =>
+              navigation.navigate("PrescriptionScreen", { patientId })
+            }
           >
             <Text style={styles.fabText}>+ Add Prescription</Text>
           </TouchableOpacity>

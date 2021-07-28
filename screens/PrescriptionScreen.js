@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -13,9 +13,9 @@ import { StackActions } from "@react-navigation/native";
 
 import { createPrescription } from "../apiClients/doctor";
 
-const PATIENT_ID = "61010d8bbd45929210a6b08b";
+export default function PrescriptionScreen({ route, navigation }) {
+  const { patientId } = route.params;
 
-export default function PrescriptionScreen({ navigation }) {
   const [diseaseName, setDiseaseName] = useState("");
   const [medicineList, setMedicineList] = useState([
     { name: "", intakes: [false, false, false] },
@@ -27,7 +27,7 @@ export default function PrescriptionScreen({ navigation }) {
     const prescription = { diseaseName };
     prescription["medicationPeriod"] = duration;
     prescription["medicines"] = medicineList.filter((m) => m.name !== "");
-    prescription["patientId"] = PATIENT_ID;
+    prescription["patientId"] = patientId;
 
     setLoading(true);
     createPrescription(prescription).then(() => {

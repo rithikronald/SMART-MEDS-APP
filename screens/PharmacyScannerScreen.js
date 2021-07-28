@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, Button, TouchableOpacity } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 
 const PATIENT_ID = "61010d8bbd45929210a6b08b";
 
-export default function ScannerScreen({ navigation }) {
+export default function PharmacyScannerScreen({ navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [data, setData] = useState();
@@ -38,7 +38,9 @@ export default function ScannerScreen({ navigation }) {
         <TouchableOpacity
           style={styles.button}
           onPress={() =>
-            navigation.navigate("ProfileScreen", { patientId: PATIENT_ID })
+            navigation.navigate("PharmacyPrescription", {
+              patientId: PATIENT_ID,
+            })
           }
         >
           <Text style={styles.buttonText}>Done</Text>
