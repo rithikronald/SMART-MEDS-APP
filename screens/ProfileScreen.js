@@ -7,98 +7,119 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
+import { getPatientDetails } from "../apiClients/doctor";
 
 export default function ProfileScreen({ navigation }) {
   const more = ">";
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    getPatientDetails()
+      .then((res) => {
+        setData(res);
+      })
+      .catch((err) => console.log(err));
+    console.log(data);
+  }, []);
   return (
     <View style={styles.container}>
-      <View style={styles.titleCard}>
-        <View style={styles.textContainer}>
-          <Text style={styles.titleText}>D. Rose</Text>
-          <View style={styles.detailsContainer}>
-            <View style={styles.categoryContainer}>
-              <Text style={styles.categoryText}>Age :</Text>
-              <Text style={styles.valueText}>45 yrs</Text>
+      {data != null ? (
+        <>
+          <View style={styles.titleCard}>
+            <View style={styles.textContainer}>
+              <Text style={styles.titleText}>{data.name}</Text>
+              <View style={styles.detailsContainer}>
+                <View style={styles.categoryContainer}>
+                  <Text style={styles.categoryText}>Age :</Text>
+                  <Text style={styles.valueText}>{data.age} yrs</Text>
+                </View>
+                <View style={styles.categoryContainer}>
+                  <Text style={styles.categoryText}>Weight :</Text>
+                  <Text style={styles.valueText}>{data.weight} kgs</Text>
+                </View>
+                <View style={styles.categoryContainer}>
+                  <Text style={styles.categoryText}>height :</Text>
+                  <Text style={styles.valueText}>{data.height} ft</Text>
+                </View>
+                <View style={styles.categoryContainer}>
+                  <Text style={styles.categoryText}>Blood Group :</Text>
+                  <Text style={styles.valueText}>{data.bloodGroup}ve</Text>
+                </View>
+              </View>
             </View>
-            <View style={styles.categoryContainer}>
-              <Text style={styles.categoryText}>Weight :</Text>
-              <Text style={styles.valueText}>65 kgs</Text>
-            </View>
-            <View style={styles.categoryContainer}>
-              <Text style={styles.categoryText}>height :</Text>
-              <Text style={styles.valueText}>5.4 ft</Text>
-            </View>
-            <View style={styles.categoryContainer}>
-              <Text style={styles.categoryText}>Blood Group :</Text>
-              <Text style={styles.valueText}>AB +ve</Text>
+            <Image
+              source={{
+                uri: `${data.photoURL}`,
+              }}
+              style={styles.thumnailImage}
+            />
+          </View>
+          <View style={styles.diagnosisContainer}>
+            <Text style={styles.titleText}>Recent Diagnosis</Text>
+            <View style={styles.diagnosisCard}>
+              <Text style={{ color: "#000" }}>{data.recent.date}</Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "flex-end",
+                  flex: 1,
+                }}
+              >
+                <Text style={styles.titleText}>{data.recent.diseaseName}</Text>
+                <TouchableOpacity style={styles.button}>
+                  <Text style={styles.buttonText}>View</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-        <Image
-          source={{
-            uri: "https://fnewshub.com/wp-content/uploads/2020/11/FB_IMG_1605666747087.jpg",
-          }}
-          style={styles.thumnailImage}
-        />
-      </View>
-      <View style={styles.diagnosisContainer}>
-        <Text style={styles.titleText}>Recent Diagnosis</Text>
-        <View style={styles.diagnosisCard}>
-          <Text style={{ color: "#000" }}>Date</Text>
-          <Text style={styles.titleText}>Fever</Text>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>View</Text>
+          <View style={styles.reportsContainer}>
+            <View style={styles.reportHeader}>
+              <Text style={styles.titleText}>Old Reports</Text>
+              <TouchableOpacity>
+                <Text style={{ fontSize: 30 }}>{more}</Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView
+              style={styles.reportBody}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+            >
+              {data.otherReports.map((item, index) => (
+                <View style={styles.reportCard} key={index}>
+                  <Text style={{ color: "#000" }}>{item.date}</Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "flex-end",
+                      flex: 1,
+                    }}
+                  >
+                    <Text style={styles.titleText}>{item.diseaseName}</Text>
+                    <TouchableOpacity
+                      style={[styles.button, { width: 60, height: 20 }]}
+                    >
+                      <Text style={[styles.buttonText, { fontSize: 14 }]}>
+                        View
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+          <TouchableOpacity
+            style={styles.fab}
+            onPress={() => navigation.navigate("PrescriptionScreen")}
+          >
+            <Text style={styles.fabText}>+ Add Prescription</Text>
           </TouchableOpacity>
-        </View>
-      </View>
-      <View style={styles.reportsContainer}>
-        <View style={styles.reportHeader}>
-          <Text style={styles.titleText}>Old Reports</Text>
-          <TouchableOpacity>
-            <Text style={{ fontSize: 30 }}>{more}</Text>
-          </TouchableOpacity>
-        </View>
-        <ScrollView
-          style={styles.reportBody}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-        >
-          <View style={styles.reportCard}>
-            <Text style={{ color: "#000" }}>Date</Text>
-            <Text style={styles.titleText}>Fever</Text>
-            <TouchableOpacity
-              style={[styles.button, { width: 60, height: 20 }]}
-            >
-              <Text style={[styles.buttonText, { fontSize: 14 }]}>View</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.reportCard}>
-            <Text style={{ color: "#000" }}>Date</Text>
-            <Text style={styles.titleText}>Fever</Text>
-            <TouchableOpacity
-              style={[styles.button, { width: 60, height: 20 }]}
-            >
-              <Text style={[styles.buttonText, { fontSize: 14 }]}>View</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.reportCard}>
-            <Text style={{ color: "#000" }}>Date</Text>
-            <Text style={styles.titleText}>Fever</Text>
-            <TouchableOpacity
-              style={[styles.button, { width: 60, height: 20 }]}
-            >
-              <Text style={[styles.buttonText, { fontSize: 14 }]}>View</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </View>
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => navigation.navigate("PrescriptionScreen")}
-      >
-        <Text style={styles.fabText}>+</Text>
-      </TouchableOpacity>
+        </>
+      ) : (
+        <ActivityIndicator size="large" color="#000" />
+      )}
     </View>
   );
 }
@@ -147,7 +168,8 @@ const styles = StyleSheet.create({
   diagnosisCard: {
     backgroundColor: "#fff",
     borderRadius: 10,
-    width: "95%",
+    width: "100%",
+    height: 150,
     marginTop: "6%",
     padding: 10,
   },
@@ -176,25 +198,26 @@ const styles = StyleSheet.create({
     marginTop: "6%",
   },
   reportCard: {
-    width: 150,
-    height: 100,
+    width: 200,
+    height: 120,
     backgroundColor: "#fff",
     borderRadius: 10,
-    marginRight: 10,
+    marginRight: 15,
     padding: 10,
   },
   fab: {
-    width: 50,
-    height: 50,
     backgroundColor: "#e3b23c",
     borderRadius: 100,
-    alignItems: "center",
     position: "absolute",
     bottom: 30,
-    right: 30,
+    right: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    alignItems: "center",
+    justifyContent: "center",
   },
   fabText: {
     color: "#fff",
-    fontSize: 30,
+    fontSize: 22,
   },
 });

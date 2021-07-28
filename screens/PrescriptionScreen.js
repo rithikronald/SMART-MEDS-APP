@@ -11,18 +11,37 @@ import {
 } from "react-native";
 
 export default function PrescriptionScreen({ navigation }) {
+  const [diseaseName, setDiseaseName] = useState("");
+  const [duration, setDuration] = useState(1);
+  useEffect(() => console.log(duration), []);
   return (
     <View style={styles.container}>
       <Text style={styles.titleText}>New Prescription</Text>
       <ScrollView>
         <View style={styles.medicationContainer}>
-          <TextInput style={styles.diseaseInput} placeholder="Disease Name" />
+          <TextInput
+            style={styles.diseaseInput}
+            placeholder="Disease Name"
+            onChangeText={(text) => {
+              setDiseaseName(text);
+            }}
+          />
           <View style={styles.counter}>
-            <TouchableOpacity style={styles.rockerzButton}>
+            <TouchableOpacity
+              style={styles.rockerzButton}
+              onPress={() => setDuration((prev) => prev + 1)}
+            >
               <Text style={{ fontSize: 25 }}>+</Text>
             </TouchableOpacity>
-            <TextInput style={styles.counterInput} />
-            <TouchableOpacity style={styles.rockerzButton}>
+            <View style={styles.counterInput} value={duration}>
+              <Text style={{ fontSize: 20 }}>{duration}</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.rockerzButton}
+              onPress={() =>
+                duration != 1 ? setDuration((prev) => prev - 1) : null
+              }
+            >
               <Text style={{ fontSize: 25 }}>-</Text>
             </TouchableOpacity>
           </View>
@@ -90,6 +109,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "#fff",
     paddingHorizontal: 10,
+    fontSize: 20,
   },
   counter: {
     flexDirection: "row",
@@ -102,8 +122,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "#fff",
     marginHorizontal: "3%",
-    textAlign: "center",
     paddingHorizontal: 10,
+    justifyContent: "center",
+    alignItems: "center",
   },
   rockerzButton: {
     backgroundColor: "#e3b23c",
@@ -123,6 +144,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "#fff",
     paddingHorizontal: 10,
+    fontSize: 16,
   },
   timeContainer: {
     flexDirection: "row",
