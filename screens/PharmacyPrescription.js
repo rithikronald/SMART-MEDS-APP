@@ -69,7 +69,7 @@ export default function PharmacyPrescription({ route, navigation }) {
               </View>
               <Image
                 source={{
-                  uri: `${data.photoURL}`,
+                  uri: `${data.photo}`,
                 }}
                 style={styles.thumnailImage}
               />
