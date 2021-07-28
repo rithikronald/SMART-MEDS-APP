@@ -6,6 +6,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import ScannerScreen from "./screens/ScannerScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import PrescriptionScreen from "./screens/PrescriptionScreen";
+import ViewPrescription from "./screens/ViewPrescription";
+import PharmacyPrescription from "./screens/PharmacyPrescription";
 
 const Stack = createStackNavigator();
 
@@ -23,6 +25,11 @@ export default function App() {
         <Stack.Screen
           name="PrescriptionScreen"
           component={PrescriptionScreen}
+        />
+        <Stack.Screen name="ViewPrescription" component={ViewPrescription} />
+        <Stack.Screen
+          name="PharmacyPrescription"
+          component={PharmacyPrescription}
         />
       </Stack.Navigator>
     </NavigationContainer>

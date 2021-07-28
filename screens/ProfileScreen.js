@@ -100,6 +100,9 @@ export default function ProfileScreen({ navigation }) {
                     <Text style={styles.titleText}>{item.diseaseName}</Text>
                     <TouchableOpacity
                       style={[styles.button, { width: 60, height: 20 }]}
+                      onPress={() =>
+                        navigation.navigate("ViewPrescription", { id: item.id })
+                      }
                     >
                       <Text style={[styles.buttonText, { fontSize: 14 }]}>
                         View
