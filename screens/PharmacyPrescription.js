@@ -30,7 +30,38 @@ export default function PharmacyPrescription({ route, navigation }) {
     <View style={styles.container}>
       {data != null ? (
         <>
-          <Text style={styles.titleText}>Prescription</Text>
+          <View style={styles.titleCard}>
+            <View style={styles.textContainer}>
+              <Text style={styles.titleText}>{data.name}</Text>
+              <View style={styles.detailsContainer}>
+                <View style={styles.categoryContainer}>
+                  <Text style={styles.categoryText}>Age :</Text>
+                  <Text style={styles.valueText}>{data.age} yrs</Text>
+                </View>
+                <View style={styles.categoryContainer}>
+                  <Text style={styles.categoryText}>Weight :</Text>
+                  <Text style={styles.valueText}>{data.weight} kgs</Text>
+                </View>
+                <View style={styles.categoryContainer}>
+                  <Text style={styles.categoryText}>height :</Text>
+                  <Text style={styles.valueText}>{data.height} ft</Text>
+                </View>
+                <View style={styles.categoryContainer}>
+                  <Text style={styles.categoryText}>Blood Group :</Text>
+                  <Text style={styles.valueText}>{data.bloodGroup}ve</Text>
+                </View>
+              </View>
+            </View>
+            <Image
+              source={{
+                uri: `${data.photoURL}`,
+              }}
+              style={styles.thumnailImage}
+            />
+          </View>
+          <Text style={[styles.titleText, { marginTop: "4%" }]}>
+            Prescription
+          </Text>
           <ScrollView>
             <View style={styles.medicationContainer}>
               <View style={styles.counter}>
@@ -42,11 +73,13 @@ export default function PharmacyPrescription({ route, navigation }) {
               <View style={styles.counter}>
                 <Text style={{ fontSize: 16 }}>MedicationPeriod</Text>
                 <View style={styles.counterInput}>
-                  <Text style={{ fontSize: 20 }}>{data.medicationPeriod}</Text>
+                  <Text style={{ fontSize: 20 }}>
+                    {data.medicationPeriod} Days
+                  </Text>
                 </View>
               </View>
             </View>
-            <Text style={[styles.titleText, { marginTop: "10%" }]}>
+            <Text style={[styles.titleText, { marginTop: "5%" }]}>
               Medicine
             </Text>
             <View
@@ -103,18 +136,10 @@ export default function PharmacyPrescription({ route, navigation }) {
             <TouchableOpacity
               style={[
                 styles.bottomButton,
-                { backgroundColor: "#f94144", flex: 1 },
-              ]}
-            >
-              <Text style={{ fontSize: 20, color: "#fff" }}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.bottomButton,
                 { backgroundColor: "#90be6d", flex: 1 },
               ]}
             >
-              <Text style={{ fontSize: 20, color: "#fff" }}>Send</Text>
+              <Text style={{ fontSize: 20, color: "#fff" }}>Deliver</Text>
             </TouchableOpacity>
           </View>
         </>
@@ -138,7 +163,7 @@ const styles = StyleSheet.create({
     color: "#423E37",
   },
   medicationContainer: {
-    marginTop: "5%",
+    marginTop: "3%",
   },
   diseaseInput: {
     width: "90%",
@@ -152,7 +177,7 @@ const styles = StyleSheet.create({
   counter: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: "5%",
+    marginTop: "3%",
   },
   counterInput: {
     width: 100,
@@ -213,5 +238,31 @@ const styles = StyleSheet.create({
     height: 40,
     marginHorizontal: "2%",
     justifyContent: "center",
+  },
+  titleCard: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  textContainer: {},
+  detailsContainer: {
+    marginTop: "15%",
+  },
+  categoryContainer: {
+    flexDirection: "row",
+  },
+  categoryText: {
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  valueText: {
+    marginLeft: "3%",
+    fontSize: 16,
+    color: "#a39594",
+  },
+  thumnailImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 100,
+    alignSelf: "center",
   },
 });
