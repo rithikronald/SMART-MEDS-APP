@@ -176,8 +176,10 @@ const styles = StyleSheet.create({
     marginTop: "20%",
   },
   diagnosisCard: {
-    backgroundColor: "#fff",
+    backgroundColor: "#fdb063",
     borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#000",
     width: "100%",
     height: 150,
     marginTop: "6%",
@@ -214,6 +216,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginRight: 15,
     padding: 10,
+    borderWidth: 1,
+    borderColor: "#000",
   },
   fab: {
     backgroundColor: "#e3b23c",
