@@ -18,7 +18,7 @@ export default function App() {
         screenOptions={{
           headerShown: false,
         }}
-        initialRouteName="PharmacyScannerScreen"
+        initialRouteName="ScannerScreen"
       >
         <Stack.Screen name="ScannerScreen" component={ScannerScreen} />
         <Stack.Screen

@@ -16,7 +16,7 @@ export default function ProfileScreen({ route, navigation }) {
   const more = ">";
   const [data, setData] = useState(null);
   useEffect(() => {
-    getPatientDetails()
+    getPatientDetails(patientId)
       .then((res) => {
         setData(res);
       })
@@ -51,7 +51,7 @@ export default function ProfileScreen({ route, navigation }) {
             </View>
             <Image
               source={{
-                uri: `${data.photoURL}`,
+                uri: `${data.photo}`,
               }}
               style={styles.thumnailImage}
             />
@@ -59,7 +59,9 @@ export default function ProfileScreen({ route, navigation }) {
           <View style={styles.diagnosisContainer}>
             <Text style={styles.titleText}>Recent Diagnosis</Text>
             <View style={styles.diagnosisCard}>
-              <Text style={{ color: "#000" }}>{data.recent.date}</Text>
+              <Text style={{ color: "#000" }}>
+                {new Date(data.recent.date).toDateString().slice(4)}
+              </Text>
               <View
                 style={{
                   flexDirection: "row",
@@ -73,7 +75,7 @@ export default function ProfileScreen({ route, navigation }) {
                   style={styles.button}
                   onPress={() =>
                     navigation.navigate("ViewPrescription", {
-                      prescriptionId: data.recent.id,
+                      prescriptionId: data.recent.prescriptionId,
                       patientId,
                     })
                   }
@@ -97,7 +99,9 @@ export default function ProfileScreen({ route, navigation }) {
             >
               {data.otherReports.map((item, index) => (
                 <View style={styles.reportCard} key={index}>
-                  <Text style={{ color: "#000" }}>{item.date}</Text>
+                  <Text style={{ color: "#000" }}>
+                    {new Date(item.date).toDateString().slice(4)}
+                  </Text>
                   <View
                     style={{
                       flexDirection: "row",
@@ -111,7 +115,7 @@ export default function ProfileScreen({ route, navigation }) {
                       style={[styles.button, { width: 60, height: 20 }]}
                       onPress={() =>
                         navigation.navigate("ViewPrescription", {
-                          prescriptionId: item.id,
+                          prescriptionId: item.prescriptionId,
                           patientId,
                         })
                       }
