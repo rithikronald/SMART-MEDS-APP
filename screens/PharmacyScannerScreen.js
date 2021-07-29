@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, Button, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner";
 
-const PATIENT_ID = "61010d8bbd45929210a6b08b";
+import { PATIENT_ID } from "../apiClients/config";
 
 export default function PharmacyScannerScreen({ navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
